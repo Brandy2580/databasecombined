@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Records</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #0072ff;
+            margin-bottom: 20px;
+        }
+        .search-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .search-form input {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-form button {
+            padding: 10px 15px;
+            background-color: #0072ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .search-form button:hover {
+            background-color: #0056b3;
+        }
+        .view-verified-button {
+            margin-left: 10px; /* Space between buttons */
+        }
+        .download-button {
+            margin-left: 10px; /* Space between buttons */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #0072ff;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-around;
+        }
+        .button {
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background-color: #218838;
+        }
+        .edit-button {
+            background-color: #007bff;
+        }
+        .edit-button:hover {
+            background-color: #0056b3;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #0072ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>RECORDS DATABASE</h1>
+
+    <form class="search-form" action="{{ url_for('search') }}" method="post" style="display: flex;">
+        <input type="text" name="name" placeholder="Search by Name">
+        <input type="text" name="surname" placeholder="Search by Surname">
+        <input type="text" name="certNO" placeholder="Search by Cert No">
+        <button type="submit">Search</button>
+        <a href="{{ url_for('fetch_verified') }}">
+            <button type="button" class="button view-verified-button">View Verified Records</button>
+        </a>
+        <a href="{{ url_for('download_verified') }}">
+            <button type="button" class="button download-button">Download Verified Records</button>
+        </a>
+    </form>
+    
+    <table>
+        <tr>
+            {% for column in column_names %}
+                <th>{{ column }}</th>
+            {% endfor %}
+            <th>Actions</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            {% for value in result %}
+                <td>{{ value }}</td>
+            {% endfor %}
+            <td class="actions">
+                <form action="{{ url_for('delete_record', recordID=result[0]) }}" method="post" style="display:inline;">
+                    <button type="submit" class="button">Delete</button>
+                </form>
+                <a href="{{ url_for('update_record', recordID=result[0]) }}">
+                    <button class="button edit-button">Edit</button>
+                </a>
+                <form action="{{ url_for('toggle_verification', recordID=result[0]) }}" method="post" style="display:inline;">
+                    <button type="submit" class="button">
+                        {% if result[-1] == 'verified' %}
+                            Unverify
+                        {% else %}
+                            Verify
+                        {% endif %}
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <a href="{{ url_for('home') }}" class="back-link">Back to Home</a>
+</body>
+</html>
